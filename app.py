@@ -124,15 +124,16 @@ if np.any(mu > 0):
 w_frac = kelly_frac * w_full
 
 # ---------------------------------------------------------------- edge table
+# Display columns are in percent units (Streamlit's % format does NOT x100).
 st.subheader("Edge check — who earns a bet?")
 edge = pd.DataFrame({
     "Ticker": tickers,
-    "Win prob": p,
-    "Upside": upside,
-    "Downside": down,
+    "Win prob": p * 100,
+    "Upside": upside * 100,
+    "Downside": down * 100,
     "Odds": odds,
-    "Kelly f*": k_disc,
-    "E[return]": mu,
+    "Kelly f*": k_disc * 100,
+    "E[return]": mu * 100,
 })
 edge["Verdict"] = np.where(k_disc > 0.005, "✅ BET",
                    np.where(k_disc > -0.005, "➖ MARGINAL", "⛔ NO BET"))
@@ -196,7 +197,7 @@ else:
 
 res = pd.DataFrame({
     "Ticker": tickers,
-    "Weight": w_final,
+    "Weight": w_final * 100,   # percent units for display
     "$ amount": w_final * portfolio_value,
     "Full-Kelly w": w_full,
 })
@@ -209,7 +210,7 @@ else:
     c1, c2 = st.columns([3, 2])
     with c1:
         st.bar_chart(res.set_index("Ticker")["Weight"], horizontal=True,
-                     x_label="Portfolio weight", y_label="")
+                     x_label="Portfolio weight (%)", y_label="")
     with c2:
         st.dataframe(
             res[["Ticker", "Weight", "$ amount"]], width="stretch", hide_index=True,
